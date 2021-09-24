@@ -5,13 +5,13 @@ import { LEADERS } from "../leaders";
 import { PROMOTIONS } from "../promotions";
 
 export const initialState = {
-	dishes: DISHES,
-    comments: COMMENTS,
-    promotions: PROMOTIONS,
-    leaders: LEADERS,
-    selectedDish: null,
-}
+  dishes: DISHES,
+  comments: COMMENTS,
+  promotions: PROMOTIONS,
+  leaders: LEADERS,
+  selectedDish: null,
+};
 
-export const Reducer = (state=initialState, action) => {
-	return state;
-}
+export const Reducer = (state = initialState, action) => {
+  return state;
+};

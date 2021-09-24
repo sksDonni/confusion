@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from "react";
 import { Navbar, NavbarBrand } from "reactstrap";
 import Menu from "./MenuComponent";
 import Dishdetail from "./DishdetailComponent";
@@ -6,19 +6,18 @@ import Header from "./HeaderCompnent";
 import Footer from "./FooterComponent";
 import Home from "./Home";
 import { Switch, Route, Redirect, withRouter } from "react-router-dom";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import Contact from "./ContactComponent";
 import About from "./AboutComponent";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     dishes: state.dishes,
-    comments : state.comments,
+    comments: state.comments,
     leaders: state.leaders,
-    promotions: state.promotions
-  }
-}
-
+    promotions: state.promotions,
+  };
+};
 
 class Main extends Component {
   constructor(props) {
