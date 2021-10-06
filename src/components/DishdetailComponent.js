@@ -1,4 +1,3 @@
-import {} from "reactstrap";
 import React, { Component } from "react";
 import { Control, LocalForm, Errors } from "react-redux-form";
 import {
@@ -16,6 +15,8 @@ import {
   CardBody,
   CardTitle,
 } from "reactstrap";
+import { Loading } from './LoadingComponent';
+import { addComment, fetchDishes } from '../redux/ActionCreators';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
@@ -41,6 +42,7 @@ class CommentForm extends Component {
   handleSubmit(values) {
     console.log("Current State is: " + JSON.stringify(values));
     alert("Current State is: " + JSON.stringify(values));
+    this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
     //event.preventDefault();
   }
 
@@ -146,7 +148,7 @@ function RenderDish({ dish }) {
   );
 }
 
-function RenderComments({ comments }) {
+function RenderComments({ comments, addComments, dishId }) {
   if (comments) {
     return (
       <div>
@@ -156,7 +158,7 @@ function RenderComments({ comments }) {
             --{comment.author} {new Date(comment.date).toDateString().slice(4)}
           </div>
         ))}
-        <CommentForm />
+        <CommentForm dishId={dishId} addComment={addComment}/>
       </div>
     );
   } else {
@@ -166,7 +168,28 @@ function RenderComments({ comments }) {
 
 function Dishdetail(props) {
   console.log(props);
-  if (props.dish != null) {
+  if (props.isLoading)
+        {
+            return(
+                <div className="container">
+                    <div className="row">            
+                        <Loading />
+                    </div>
+                </div>
+            );
+        }
+
+  else if (props.errMess) {
+            return(
+                <div className="container">
+                    <div className="row">            
+                        <h4>{props.errMess}</h4>
+                    </div>
+                </div>
+            );
+        }
+
+  else if (props.dish != null) {
     return (
       <div className="container">
         <div className="row">
@@ -176,7 +199,10 @@ function Dishdetail(props) {
           <div className="col-sm-12 col-md-5 m-1">
             <h2>Comments</h2>
             {props.comments ? (
-              <RenderComments comments={props.comments} />
+              <RenderComments comments={props.comments}
+        addComment={props.addComment}
+        dishId={props.dish.id}
+      />
             ) : null}
           </div>
         </div>
