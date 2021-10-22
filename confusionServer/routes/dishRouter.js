@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
-const Dishes = require('../models/dishes');
+const Dishes = require('../models/dishModel');
 const dishRouter = express.Router();
 
 dishRouter.use(bodyParser.json())
@@ -15,10 +15,10 @@ dishRouter.route('/')
 			res.json(dishes);
 		}, (err) => next(err))
 		.catch((err) => next(err)) 
-	});
+	})
 
 	.post((req, res, next) => {
-    Dishes.create(req.body);
+    Dishes.create(req.body)
     .then((dishes) => {
     	res.statusCode = 200;
     	res.setHeader('content-Type', 'application/json');
@@ -44,7 +44,7 @@ dishRouter.route('/')
 
 dishRouter.route('/:dishId')
 	.get((req,res,next) => {
-	    Dishes.findById({req.params.dishId})
+	    Dishes.findById(req.params.dishId)
 	    .then((dish) => {
 	    	res.statusCode = 200;
 	    	res.setHeader('content-Type', 'application/json');

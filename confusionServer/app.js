@@ -10,7 +10,8 @@ const dishRouter = require('./routes/dishRouter');
 const promoRouter = require('./routes/promoRouter');
 const leaderRouter = require('./routes/leaderRouter');
 const Dishes = require('./models/dishModel');
-
+const session = require('express-session')
+const FileStore = require('session-file-store')(session);
 const app = express();
 const url = 'mongodb://localhost:27017/conFusion';
 const connect = mongoose.connect(url);
@@ -25,8 +26,66 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser('12345-67890-09876-54321'));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+  name: 'session-id',
+  secret: '12345-67890-09876-54321',
+  saveUnitialized : false,
+  resave: false,
+  store: new FileStore()
+}));
+
+
+const authorisation = (req, res, next) => {
+  console.log(req.session);
+
+  if(!req.session.user)
+  {
+    const authHeader = req.header.authorization;
+    if(!authHeader)
+    {
+      const err = new Error('You are not authenticatied!');
+      res.setHeader('WWW-Authenticate', 'Basic');
+      err.status = 401;
+      next(err);
+      return;
+    }
+
+    const auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
+    const user = auth[0];
+    const password = auth[1];
+
+    if(user === 'admin' && password === 'password')
+    {
+      res.session.user = 'admin';
+      next();   
+    }else
+    {
+      const err = new Error('You are not authenticatied!!');
+      err.setHeader('WWW-Authenticate', 'Basic');
+      err.status = 401;
+      next(err);
+    }
+  }
+  else
+  {
+    if(req.signedCookies.user == 'admin')
+    {
+      next();
+    }else
+    {
+      const err = new Error('You are not authenticatied!!');
+      err.setHeader('WWW-Authenticate', 'Basic');
+      err.status = 401;
+      next(err);
+    }
+  }  
+}
+
+
+app.use(authorisation);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
